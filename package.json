@@ -1,0 +1,24 @@
+{
+  "name": "checkers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "class.js",
+  "dependencies": {
+    "jest": "^26.5.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest test.spec.js --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vertefra/checkers-redone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vertefra/checkers-redone/issues"
+  },
+  "homepage": "https://github.com/vertefra/checkers-redone#readme"
+}
