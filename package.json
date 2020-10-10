@@ -17,7 +17,7 @@
   "scripts": {
     "test": "jest test.spec.js --watch",
     "build": "webpack",
-    "start": "webpack-dev-server --open"
+    "dev": "webpack-dev-server --open"
   },
   "repository": {
     "type": "git",

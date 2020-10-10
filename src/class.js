@@ -1,3 +1,5 @@
+const { jumpCell } = require("./utils.js");
+
 // coordinates are an array of two elements [x,y]
 
 class Board {
@@ -6,7 +8,7 @@ class Board {
     this.y = y;
     this.board = {};
   }
-
+  //
   // initialize the board with 0 value
   initBoard() {
     console.log("sanity");
@@ -73,8 +75,11 @@ class Board {
     const allMoves = [];
     const x = coord[0];
     const y = coord[1];
+
     const move_1 = [];
     const move_2 = [];
+    const move_3 = [];
+    const move_4 = [];
 
     switch (cell) {
       case " ":
@@ -84,7 +89,7 @@ class Board {
         throw "selected cell is empty";
 
       case "W":
-        // black pieces move from top to bottom
+        // B pieces move from top to bottom
 
         move_1.push(x - 1, y - 1);
         move_2.push(x + 1, y - 1);
@@ -94,7 +99,7 @@ class Board {
         return allMoves;
 
       case "B":
-        // black pieces move from top to bottom
+        // white pieces move from bottom to top
 
         move_1.push(x - 1, y + 1);
         move_2.push(x + 1, y + 1);
@@ -104,25 +109,54 @@ class Board {
         return allMoves;
 
       // TODO: create cases for KW and KB
+
+      case "WK":
+      case "BK":
+        move_1.push(x - 1, y - 1);
+        move_2.push(x + 1, y - 1);
+        move_3.push(x - 1, y + 1);
+        move_4.push(x + 1, y + 1);
+
+        if (this.inBoard(move_1)) allMoves.push(move_1);
+        if (this.inBoard(move_2)) allMoves.push(move_2);
+        if (this.inBoard(move_3)) allMoves.push(move_3);
+        if (this.inBoard(move_4)) allMoves.push(move_4);
+
+        return allMoves;
     }
   }
 
-  canJump(coord) {
-    // can jump true if one of the allowed moves is occupy by opponent and the sequential cell is empy
-    const player = this.returnPiece(coord);
-    let opponent = "";
-    if (player !== " " && player !== 0) {
-      opponent = player === "W" ? "B" : "W";
+  //
+  // canJump return the jumpCoordinates if a jump is possible, false if not
+  //
+
+  canJump(playerCoord, opponentCoord) {
+    const Pcolor = this.board[Board.getKey(playerCoord)];
+    const Ocolor = this.board[Board.getKey(opponentCoord)];
+
+    if (Pcolor === Ocolor) return false;
+
+    if (
+      (Pcolor !== "W" && Pcolor !== "B") ||
+      (Ocolor !== "W" && Ocolor !== "B")
+    ) {
+      throw "Player/Opponent position is invalid";
     } else {
-      throw "current cell is not W or B cannot evaluate a jump";
-    }
-    const allowedMoves = this.allowedMoves(coord);
+      const jump = jumpCell(playerCoord, opponentCoord);
+      const jumpKey = Board.getKey(jump);
 
-    // check for every allowed move if there is an opponent in that position
+      console.log(this.board[jumpKey]);
 
-    for (let aroundCoord of allowedMoves) {
-      const piece = this.returnPiece(aroundCoord);
-      if (piece === opponent) {
+      if (this.inBoard(jump) && this.board[jumpKey] === 0) {
+        // jump is possible. Return and object with the opponent position
+        // and the jump coordinates
+
+        const jumpObj = {
+          jump,
+          opponent: opponentCoord,
+        };
+
+        return jumpObj;
       }
     }
   }
@@ -145,11 +179,3 @@ class Board {
 }
 
 module.exports = Board;
-
-// const board = new Board(8);
-// board.initBoard();
-// board.renderBoard();
-// board.setPiece("W", [5, 5]);
-// board.setPiece("B", [4, 4]);
-// console.log(board.canJump([5, 5]));
-// board.renderBoard();
