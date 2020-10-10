@@ -162,8 +162,18 @@ class Board {
         };
 
         return jumpObj;
+      } else {
+        return false;
       }
     }
+  }
+
+  // this should be the core of our methods. will return evvery single possible move
+  // for a piece
+
+  evaluateMoves(coord) {
+    const Pcolor = this.board[Board.getKey(playerCoord)];
+    const Ocolor = Pcolor === "W" ? "B" : "W";
   }
 
   inBoard(coord) {

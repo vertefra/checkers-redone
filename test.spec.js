@@ -99,6 +99,10 @@ describe("Testing jumps and advance features of Board class", () => {
   test("W piece in position 4-4 returns false for jumping coordinates for a B piece in positon 3-5 (direction not allowed)", () => {
     expect(board.canJump([4, 4], [3, 5])).toBe(false);
   });
+
+  test("B piece in position 3-3 return false for jumping coordinate for W pice in position 4-4 (jump cell occupied)", () => {
+    expect(board.canJump([3, 3], [4, 4])).toBe(false);
+  });
 });
 
 // =========================================================== //
