@@ -11,11 +11,13 @@
     "file-loader": "^6.1.1",
     "style-loader": "^2.0.0",
     "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   },
   "scripts": {
     "test": "jest test.spec.js --watch",
-    "build": "webpack"
+    "build": "webpack",
+    "start": "webpack-dev-server --open"
   },
   "repository": {
     "type": "git",

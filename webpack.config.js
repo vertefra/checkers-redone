@@ -1,10 +1,15 @@
 const path = require("path");
 
 module.exports = {
+  mode: "development",
   entry: "./src/index.js",
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
+  },
+  devtool: "eval-cheap-source-map",
+  devServer: {
+    contentBase: "./dist",
   },
   module: {
     rules: [
@@ -19,5 +24,4 @@ module.exports = {
       },
     ],
   },
-  mode: "development",
 };
