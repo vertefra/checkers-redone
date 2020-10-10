@@ -1,4 +1,4 @@
-const Board = require("./class");
+const Board = require("./src/class");
 
 describe("testing main functionality of Board class", () => {
   let board;
