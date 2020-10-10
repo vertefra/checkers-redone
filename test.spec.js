@@ -1,5 +1,5 @@
 const Board = require("./src/class");
-const { jumpCell } = require("./src/utils");
+const { jumpCell, eq } = require("./src/utils");
 
 describe("testing main functionality of Board class", () => {
   let board;
@@ -78,11 +78,26 @@ describe("Testing jumps and advance features of Board class", () => {
     expect(board.board["3-3"]).toBe("B");
   });
 
-  test("W piece in position 4-4 returns [1,2] for jumping coordinates for a B piece in position 3-3", () => {
+  test("W piece in position 4-4 returns [2,2] for jumping coordinates for a B piece in position 3-3", () => {
     const expected = { jump: [2, 2], opponent: [3, 3] };
     expect(board.canJump([4, 4], [3, 3])).toEqual(
       expect.objectContaining(expected)
     );
+  });
+
+  test("W piece in position 4-4 returns [6,2] for jumping coordinates for a B piece in position 5-3", () => {
+    const expected = { jump: [6, 2], opponent: [5, 3] };
+    expect(board.canJump([4, 4], [5, 3])).toEqual(
+      expect.objectContaining(expected)
+    );
+  });
+
+  test("W piece in position 4-4 returns false for jumping coordinates for a B piece in position 5-5 (direction not allowed)", () => {
+    expect(board.canJump([4, 4], [5, 5])).toBe(false);
+  });
+
+  test("W piece in position 4-4 returns false for jumping coordinates for a B piece in positon 3-5 (direction not allowed)", () => {
+    expect(board.canJump([4, 4], [3, 5])).toBe(false);
   });
 });
 
@@ -111,5 +126,17 @@ describe("Testing utils functionalities", () => {
   test("expect jump cell for W in 4-4 and B in 3-5 to be [2,6]", () => {
     const expected = [2, 6];
     expect(jumpCell([4, 4], [3, 5])).toEqual(expect.arrayContaining(expected));
+  });
+
+  test("expect eq([3,3],[4,3]) to return false", () => {
+    expect(eq([3, 3], [4, 3])).toBe(false);
+  });
+
+  test("expect eq([3,3],[3,3]) to return true", () => {
+    expect(eq([3, 3], [3, 3])).toBe(true);
+  });
+
+  test("expect eq([4,3],[3,3]) to return false", () => {
+    expect(eq([4, 3], [3, 3])).toBe(false);
   });
 });

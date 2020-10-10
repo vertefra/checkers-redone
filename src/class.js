@@ -1,4 +1,4 @@
-const { jumpCell } = require("./utils.js");
+const { jumpCell, eq } = require("./utils.js");
 
 // coordinates are an array of two elements [x,y]
 
@@ -133,8 +133,15 @@ class Board {
   canJump(playerCoord, opponentCoord) {
     const Pcolor = this.board[Board.getKey(playerCoord)];
     const Ocolor = this.board[Board.getKey(opponentCoord)];
+    const allowedMoves = this.allowedMoves(playerCoord);
+
+    let directionAllowed = false;
+    for (let move of allowedMoves) {
+      if (eq(move, opponentCoord)) directionAllowed = true;
+    }
 
     if (Pcolor === Ocolor) return false;
+    if (!directionAllowed) return false;
 
     if (
       (Pcolor !== "W" && Pcolor !== "B") ||
@@ -144,8 +151,6 @@ class Board {
     } else {
       const jump = jumpCell(playerCoord, opponentCoord);
       const jumpKey = Board.getKey(jump);
-
-      console.log(this.board[jumpKey]);
 
       if (this.inBoard(jump) && this.board[jumpKey] === 0) {
         // jump is possible. Return and object with the opponent position

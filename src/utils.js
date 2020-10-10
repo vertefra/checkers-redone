@@ -63,4 +63,9 @@ const jumpCell = (playerCoord, opponentCoord) => {
   throw "Error occurred, cells could be not adiacent";
 };
 
-module.exports = { jumpCell };
+// compare two array of coordinates and returns true if equal, false if not
+const eq = (coord1, coord2) => {
+  return coord1[0] === coord2[0] && coord1[1] === coord2[1];
+};
+
+module.exports = { jumpCell, eq };
