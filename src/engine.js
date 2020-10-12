@@ -31,7 +31,7 @@ export default class Engine {
     return this.possibleMoves;
   }
 
-  evaluateBoard(color, board) {
+  evaluateBoard(color, board = this.board) {
     const MAX = color;
     const MIN = MAX === "W" ? "B" : "W";
     let MAX_POINTS = 0,
@@ -52,9 +52,30 @@ export default class Engine {
     return MAX_POINTS - MIN_POINTS;
   }
 
-  bestMove(max, board) {
+  move(move) {
+    if (this.b.execMove(move)) {
+      return this.board;
+    } else {
+      return false;
+    }
+  }
+
+  bestMove(max, board = this.board) {
+    const saved_board = { ...board };
     const MAX = max;
     const MIN = MAX === "W" ? "B" : "W";
     const max_moves = this.evalAllPossibleMoves(MAX);
+    console.log(max_moves);
+    for (let move of max_moves) {
+      this.move(move);
+      const max_points = this.evaluateBoard(MAX);
+      this.tree.insertBoard(this.board, max_points);
+      console.log(this.tree);
+    }
+  }
+
+  loadBoard(board) {
+    this.board = { ...board };
+    return this.board;
   }
 }

@@ -1,5 +1,5 @@
 class Node {
-  contructor(board, score) {
+  constructor(board, score) {
     this.board = board;
     this.score = score;
     this.left = null;

@@ -220,7 +220,7 @@ class Board {
     const Pcolor = this.board[Board.getKey(coord)];
     const Ocolor = Pcolor === "W" ? "B" : "W";
     const allowedMoves = this.allowedMoves(coord);
-    const possibleMoves = [];
+    let possibleMoves = [];
     coord[0] = parseInt(coord[0]);
     coord[1] = parseInt(coord[1]);
     for (let move_to of allowedMoves) {
@@ -228,15 +228,19 @@ class Board {
       const cellStatus = this.returnPiece(move_to);
       if (cellStatus === 0) {
         move.push(move_to);
-        possibleMoves.push(move);
+        possibleMoves = [...possibleMoves, ...move];
       } else if (cellStatus === Ocolor) {
         const jump = this.canJump(coord, move_to);
         move.push(jump);
-        if (jump) possibleMoves.push(move);
+        if (jump) {
+          possibleMoves = [...possibleMoves, ...move];
+        }
       }
     }
 
-    return possibleMoves;
+    const flat_moves = [...possibleMoves];
+
+    return flat_moves;
   }
 
   // EXEC MOVE:
@@ -278,6 +282,8 @@ class Board {
 
       this.removePiece(from);
       this.setPiece(player, to);
+
+      return true;
     } else {
       // ==================
       //  executing a jump
@@ -296,6 +302,8 @@ class Board {
       this.removePiece(from);
       this.setPiece(player, jump);
       this.removePiece(opponent);
+
+      return true;
     }
   }
 
