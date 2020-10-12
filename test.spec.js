@@ -197,7 +197,12 @@ describe("testing moves execution ", () => {
       [2, 2],
     ];
 
-    expect(board.execMove(move)).toBe(false);
+    const expected = {
+      success: false,
+      error: "destination cell is not empty",
+    };
+
+    expect(board.execMove(move)).toEqual(expect.objectContaining(expected));
   });
 
   // testing a jump

@@ -237,10 +237,12 @@ class Board {
 
       const { jump, opponent } = to;
 
+      console.log(this.board[Board.getKey(jump)]);
+
       if (opponent === 0 || opponent === " ")
         return { success: false, error: "opponent position is 0 or void" };
 
-      if (jump !== 0)
+      if (this.board[Board.getKey(jump)] !== 0)
         return { success: false, error: "jump position not empty" };
 
       this.removePiece(from);
