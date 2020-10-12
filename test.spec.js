@@ -119,6 +119,7 @@ describe("Testing jumps and advance features of Board class", () => {
 
 describe("Testing evaluation of all moves around a piece", () => {
   const board = new Board(8);
+
   beforeEach(() => {
     board.initBoard();
     board.setPiece("W", [2, 4]);
@@ -127,23 +128,32 @@ describe("Testing evaluation of all moves around a piece", () => {
   });
 
   test("Moves for piece W in pos 2-4 are [[1,3],{opponent:[3,3],jump:[4,2]}]", () => {
+    const position = [2, 4];
     const expected = [1, 3];
     const objeExpected = {
       opponent: [3, 3],
       jump: [4, 2],
     };
     expect(board.evaluateMoves([2, 4])).toEqual(
-      expect.arrayContaining([expected, objeExpected])
+      expect.objectContaining([
+        [position, expected],
+        [position, objeExpected],
+      ])
     );
   });
+
   test("Moves for piece B in position 3-3 are[[4, 4],{opponents:[2,4], jump[1,5]}]", () => {
+    const position = [3, 3];
     const expected = [4, 4];
     const objeExpected = {
       opponent: [2, 4],
       jump: [1, 5],
     };
     expect(board.evaluateMoves([3, 3])).toEqual(
-      expect.arrayContaining([expected, objeExpected])
+      expect.arrayContaining([
+        [position, expected],
+        [position, objeExpected],
+      ])
     );
   });
 
@@ -152,6 +162,57 @@ describe("Testing evaluation of all moves around a piece", () => {
     expect(board.evaluateMoves([1, 1])).toEqual(
       expect.arrayContaining(expected)
     );
+  });
+});
+
+// =========================================================== //
+// TESTING a move execution
+// =========================================================== //
+
+describe("testing moves execution ", () => {
+  const board = new Board(8);
+  board.initBoard();
+
+  beforeEach(() => {
+    board.setPiece("W", [1, 1]);
+    board.setPiece("B", [2, 2]);
+    board.setPiece("B", [3, 3]);
+    board.setPiece("W", [2, 4]);
+    board.setPiece("W", [4, 4]);
+  });
+
+  test("B piece 2-2 move to 1-3", () => {
+    const move = [
+      [2, 2],
+      [1, 3],
+    ];
+    board.execMove(move);
+    expect(board.board["1-3"]).toBe("B");
+    expect(board.board["2-2"]).toBe(0);
+  });
+
+  test("test invalid move for W 1-1", () => {
+    const move = [
+      [1, 1],
+      [2, 2],
+    ];
+
+    expect(board.execMove(move)).toBe(false);
+  });
+
+  // testing a jump
+  test("testing a jump from W in 2-4 to 4-2 jumping piece in 3-3", () => {
+    const move = [
+      [2, 4],
+      {
+        jump: [4, 2],
+        opponent: [3, 3],
+      },
+    ];
+    board.execMove(move);
+    expect(board.board["2-4"]).toBe(0);
+    expect(board.board["3-3"]).toBe(0);
+    expect(board.board["4-2"]).toBe("W");
   });
 });
 

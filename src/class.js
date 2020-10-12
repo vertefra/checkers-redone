@@ -176,16 +176,77 @@ class Board {
     const allowedMoves = this.allowedMoves(coord);
     const possibleMoves = [];
     for (let move_to of allowedMoves) {
+      const move = [coord];
       const cellStatus = this.returnPiece(move_to);
       if (cellStatus === 0) {
-        possibleMoves.push(move_to);
+        move.push(move_to);
+        possibleMoves.push(move);
       } else if (cellStatus === Ocolor) {
         const jump = this.canJump(coord, move_to);
-        if (jump) possibleMoves.push(jump);
+        move.push(jump);
+        if (jump) possibleMoves.push(move);
       }
     }
 
     return possibleMoves;
+  }
+
+  // EXEC MOVE:
+  // a move is an array with first element coord of position
+  // and second element is eithe a move or a jump object
+
+  execMove(move) {
+    const [from, to] = move;
+    const player = this.board[Board.getKey(from)];
+    let allowed = false;
+
+    // if player is 0 or ' ' return false
+
+    if (player === 0 || player === " ")
+      return { success: false, error: "player cell is 0 or void" };
+
+    // after this check, let's see if the move is a jump
+    // or a normal move
+
+    if (Array.isArray(to)) {
+      // if destination cell is not empty return false
+
+      const to_cell = this.board[Board.getKey(to)];
+      if (to_cell !== 0)
+        return { success: false, error: "destination cell is not empty" };
+
+      // check if the move is in the allowed moves
+
+      for (let move of this.allowedMoves(from)) {
+        if (eq(move, to)) allowed = true;
+      }
+
+      // exit if the check oif allowed moves was not positive
+
+      if (!allowed)
+        return { success: false, error: "move not allowed for this piece" };
+
+      // execute the move
+
+      this.removePiece(from);
+      this.setPiece(player, to);
+    } else {
+      // ==================
+      //  executing a jump
+      // ==================
+
+      const { jump, opponent } = to;
+
+      if (opponent === 0 || opponent === " ")
+        return { success: false, error: "opponent position is 0 or void" };
+
+      if (jump !== 0)
+        return { success: false, error: "jump position not empty" };
+
+      this.removePiece(from);
+      this.setPiece(player, jump);
+      this.removePiece(opponent);
+    }
   }
 
   inBoard(coord) {
