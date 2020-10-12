@@ -11,7 +11,6 @@ class Board {
   //
   // initialize the board with 0 value
   initBoard() {
-    console.log("sanity");
     for (let x = 1; x <= this.x; x++) {
       for (let y = 1; y <= this.y; y++) {
         const coord = `${x}-${y}`;
@@ -26,20 +25,16 @@ class Board {
 
   renderBoard() {
     let board = "";
-    let lineCount = 0;
-    let line = 1;
-    let firstLine = true;
-
-    Object.values(this.board).forEach((value) => {
-      lineCount++;
-
-      if (lineCount % this.x === 0) {
-        board += value;
-        board += " \n";
-      } else {
-        board += value;
+    let column = 0;
+    for (let y = 1; y <= this.y; y++) {
+      for (let x = 1; x <= this.x; x++) {
+        column++;
+        const key = `${x}-${y}`;
+        const cell = this.board[key];
+        board += cell;
+        if (column % this.x === 0) board += "\n";
       }
-    });
+    }
     console.log(board);
   }
 
@@ -68,6 +63,11 @@ class Board {
       this.board[key] = 0;
     }
   }
+
+  // returns all the allowed moves for a piece (W piece North-East North-West)
+  // B pieces South-East South-West. Doestn check if the cell is occupied.
+  // check if the cell is out of the board and does not returns it
+  // return an array with coordinates (1-2 for B and W, max 4 for K)
 
   allowedMoves(coord) {
     const key = Board.getKey(coord);
@@ -107,8 +107,6 @@ class Board {
         if (this.inBoard(move_1)) allMoves.push(move_1);
         if (this.inBoard(move_2)) allMoves.push(move_2);
         return allMoves;
-
-      // TODO: create cases for KW and KB
 
       case "WK":
       case "BK":
@@ -168,12 +166,24 @@ class Board {
     }
   }
 
-  // this should be the core of our methods. will return evvery single possible move
+  // this should be the core of our methods. will return every single possible move
   // for a piece
 
   evaluateMoves(coord) {
-    const Pcolor = this.board[Board.getKey(playerCoord)];
+    const Pcolor = this.board[Board.getKey(coord)];
     const Ocolor = Pcolor === "W" ? "B" : "W";
+    const allowedMoves = this.allowedMoves(coord);
+    console.log(allowedMoves);
+    const possibleMoves = [];
+    for (let move of allowedMoves) {
+      console.log(this.returnPiece(move));
+      const cellStatus = this.returnPiece(move);
+      if (cellStatus === 0) {
+        possibleMoves.push(move);
+      }
+    }
+
+    return possibleMoves;
   }
 
   inBoard(coord) {

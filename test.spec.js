@@ -13,17 +13,20 @@ describe("testing main functionality of Board class", () => {
   });
 
   beforeEach(() => {
-    board.setPiece("W", [3, 3]);
+    board.setPiece("W", [2, 4]);
+    board.setPiece("W", [4, 2]);
     board.setPiece("B", [2, 2]);
     board.setPiece("W", [1, 1]);
+    board.setPiece("B", [5, 3]);
+    board.setPiece("B", [3, 5]);
   });
 
-  afterEach(() => {
-    board.removePiece([3, 3]);
+  test("expect a W piece in pos 2-4", () => {
+    expect(board.board["2-4"]).toBe("W");
   });
 
-  test("expect a W piece in pos 3-3", () => {
-    expect(board.board["3-3"]).toBe("W");
+  test("expect a W piece in pos 4-2", () => {
+    expect(board.board["4-2"]).toBe("W");
   });
 
   test("expec a B piece in pos 2-2", () => {
@@ -34,14 +37,19 @@ describe("testing main functionality of Board class", () => {
     expect(board.board["1-1"]).toBe("W");
   });
 
+  test("expect a B piece in pos 5-3 and a B piece in pos 3-5", () => {
+    expect(board.board["5-3"]).toBe("B");
+    expect(board.board["3-5"]).toBe("B");
+  });
+
   // TESTING ALLOWED MOVES
 
-  test("expect allowed moves for W in 3-3 to be[[4,2],[2,2]]", () => {
+  test("expect allowed moves for W in 2-4 to be[[1,3],[3,3]]", () => {
     const expected = [
-      [4, 2],
-      [2, 2],
+      [1, 3],
+      [3, 3],
     ];
-    expect(board.allowedMoves([3, 3])).toEqual(
+    expect(board.allowedMoves([2, 4])).toEqual(
       expect.arrayContaining(expected)
     );
   });
@@ -102,6 +110,25 @@ describe("Testing jumps and advance features of Board class", () => {
 
   test("B piece in position 3-3 return false for jumping coordinate for W pice in position 4-4 (jump cell occupied)", () => {
     expect(board.canJump([3, 3], [4, 4])).toBe(false);
+  });
+});
+
+// ============================================================
+// Testing correct evaluation of all moves around a given piece
+// ============================================================
+
+describe("Testing evaluation of all moves around a piece", () => {
+  const board = new Board(8);
+  beforeEach(() => {
+    board.setPiece("W", [4, 4]);
+    board.setPiece("B", [5, 3]);
+  });
+
+  test("Moves for piece W in pos 4-4 are [[3,3],{opponent:[5,3],jump:[6,2]}]", () => {
+    const expected = [5, 3];
+    expect(board.evaluateMoves([4, 4])).toEqual(
+      expect.arrayContaining(expected)
+    );
   });
 });
 
