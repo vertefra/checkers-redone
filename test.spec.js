@@ -120,13 +120,36 @@ describe("Testing jumps and advance features of Board class", () => {
 describe("Testing evaluation of all moves around a piece", () => {
   const board = new Board(8);
   beforeEach(() => {
-    board.setPiece("W", [4, 4]);
-    board.setPiece("B", [5, 3]);
+    board.initBoard();
+    board.setPiece("W", [2, 4]);
+    board.setPiece("B", [3, 3]);
+    board.setPiece("W", [1, 1]);
   });
 
-  test("Moves for piece W in pos 4-4 are [[3,3],{opponent:[5,3],jump:[6,2]}]", () => {
-    const expected = [5, 3];
-    expect(board.evaluateMoves([4, 4])).toEqual(
+  test("Moves for piece W in pos 2-4 are [[1,3],{opponent:[3,3],jump:[4,2]}]", () => {
+    const expected = [1, 3];
+    const objeExpected = {
+      opponent: [3, 3],
+      jump: [4, 2],
+    };
+    expect(board.evaluateMoves([2, 4])).toEqual(
+      expect.arrayContaining([expected, objeExpected])
+    );
+  });
+  test("Moves for piece B in position 3-3 are[[4, 4],{opponents:[2,4], jump[1,5]}]", () => {
+    const expected = [4, 4];
+    const objeExpected = {
+      opponent: [2, 4],
+      jump: [1, 5],
+    };
+    expect(board.evaluateMoves([3, 3])).toEqual(
+      expect.arrayContaining([expected, objeExpected])
+    );
+  });
+
+  test("Moves for piece W in position 1-1 are []", () => {
+    const expected = [];
+    expect(board.evaluateMoves([1, 1])).toEqual(
       expect.arrayContaining(expected)
     );
   });

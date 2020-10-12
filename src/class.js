@@ -26,6 +26,7 @@ class Board {
   renderBoard() {
     let board = "";
     let column = 0;
+    const emptyStyleBack = "background: #000";
     for (let y = 1; y <= this.y; y++) {
       for (let x = 1; x <= this.x; x++) {
         column++;
@@ -173,13 +174,14 @@ class Board {
     const Pcolor = this.board[Board.getKey(coord)];
     const Ocolor = Pcolor === "W" ? "B" : "W";
     const allowedMoves = this.allowedMoves(coord);
-    console.log(allowedMoves);
     const possibleMoves = [];
-    for (let move of allowedMoves) {
-      console.log(this.returnPiece(move));
-      const cellStatus = this.returnPiece(move);
+    for (let move_to of allowedMoves) {
+      const cellStatus = this.returnPiece(move_to);
       if (cellStatus === 0) {
-        possibleMoves.push(move);
+        possibleMoves.push(move_to);
+      } else if (cellStatus === Ocolor) {
+        const jump = this.canJump(coord, move_to);
+        if (jump) possibleMoves.push(jump);
       }
     }
 
