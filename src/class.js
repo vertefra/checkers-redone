@@ -141,8 +141,8 @@ class Board {
         move_1.push(x - 1, y - 1);
         move_2.push(x + 1, y - 1);
 
-        if (this.inBoard(move_1)) allMoves.push(move_1);
-        if (this.inBoard(move_2)) allMoves.push(move_2);
+        if (this.inBoard(move_1) && move_1.length > 0) allMoves.push(move_1);
+        if (this.inBoard(move_2) && move_2.length > 0) allMoves.push(move_2);
         return allMoves;
 
       case "B":
@@ -151,8 +151,8 @@ class Board {
         move_1.push(x - 1, y + 1);
         move_2.push(x + 1, y + 1);
 
-        if (this.inBoard(move_1)) allMoves.push(move_1);
-        if (this.inBoard(move_2)) allMoves.push(move_2);
+        if (this.inBoard(move_1) && move_1.length > 0) allMoves.push(move_1);
+        if (this.inBoard(move_2) && move_2.length > 0) allMoves.push(move_2);
         return allMoves;
 
       case "WK":
@@ -221,6 +221,8 @@ class Board {
     const Ocolor = Pcolor === "W" ? "B" : "W";
     const allowedMoves = this.allowedMoves(coord);
     const possibleMoves = [];
+    coord[0] = parseInt(coord[0]);
+    coord[1] = parseInt(coord[1]);
     for (let move_to of allowedMoves) {
       const move = [coord];
       const cellStatus = this.returnPiece(move_to);
@@ -298,7 +300,12 @@ class Board {
   }
 
   inBoard(coord) {
-    if (coord[0] > this.x || coord[1] > this.y) {
+    if (
+      coord[0] > this.x ||
+      coord[0] <= 0 ||
+      coord[1] > this.y ||
+      coord[1] <= 0
+    ) {
       return false;
     } else {
       return true;
@@ -310,7 +317,7 @@ class Board {
   }
 
   static getCoord(key) {
-    return key.split("-");
+    return key.split("-").map((v) => parseInt(v));
   }
 }
 

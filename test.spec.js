@@ -179,6 +179,32 @@ describe("testing moves execution ", () => {
     board.setPiece("B", [3, 3]);
     board.setPiece("W", [2, 4]);
     board.setPiece("W", [4, 4]);
+    board.setPiece("W", [6, 6]);
+  });
+
+  afterEach(() => {
+    board.removePiece([1, 1]);
+    board.removePiece([2, 2]);
+    board.removePiece([3, 3]);
+    board.removePiece([2, 4]);
+    board.removePiece([4, 4]);
+    board.removePiece([6, 6]);
+  });
+
+  test("W piece in 6-6 has evaluated moves = [[5,5],[7,5]]", () => {
+    const expected = [
+      [
+        [6, 6],
+        [5, 5],
+      ],
+      [
+        [6, 6],
+        [7, 5],
+      ],
+    ];
+    expect(board.evaluateMoves([6, 6])).toEqual(
+      expect.arrayContaining(expected)
+    );
   });
 
   test("B piece 2-2 move to 1-3", () => {
