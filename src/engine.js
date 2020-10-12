@@ -9,4 +9,9 @@ export default class Engine {
   renderBoard() {
     this.b.renderBoard();
   }
+
+  setStartingBoard() {
+    console.log("setting starting board");
+    this.b.setUpBoard();
+  }
 }

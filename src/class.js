@@ -23,6 +23,52 @@ class Board {
     }
   }
 
+  setUpBoard() {
+    // if ((this.x !== this.y) !== 8)
+    //   return { success: false, error: "board must be 8x8" };
+
+    console.log("--init board--");
+    this.initBoard();
+
+    const white_starting_positions = [
+      "2-8",
+      "4-8",
+      "6-8",
+      "8-8",
+      "1-7",
+      "3-7",
+      "5-7",
+      "7-7",
+      "2-6",
+      "4-6",
+      "6-6",
+      "8-6",
+    ];
+
+    const black_starting_positions = [
+      "1-1",
+      "3-1",
+      "5-1",
+      "7-1",
+      "2-2",
+      "4-2",
+      "6-2",
+      "8-2",
+      "1-3",
+      "3-3",
+      "5-3",
+      "7-3",
+    ];
+
+    for (let key of white_starting_positions) {
+      this.board[key] = "W";
+    }
+
+    for (let key of black_starting_positions) {
+      this.board[key] = "B";
+    }
+  }
+
   renderBoard() {
     let board = "";
     let column = 0;
