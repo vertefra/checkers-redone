@@ -1,18 +1,19 @@
 class Node {
-  contructor(data) {
-    this.data = data;
+  contructor(board, score) {
+    this.board = board;
+    this.score = score;
     this.left = null;
     this.right = null;
   }
 }
 
-class BinaryTree {
+module.exports = class BinaryTree {
   constructor() {
     this.root = null;
   }
 
-  insertData(data) {
-    const newNode = new Node(data);
+  insertBoard(board, score) {
+    const newNode = new Node(board, score);
     if (this.root === null) {
       this.root = newNode;
     } else {
@@ -22,7 +23,7 @@ class BinaryTree {
 
   insertNode(currentNode, newNode) {
     // if value of new node is less than the current node move left
-    if (newNode.data < currentNode.data) {
+    if (newNode.score < currentNode.score) {
       if (currentNode.left === null) {
         currentNode.left = newNode;
       } else {
@@ -30,7 +31,7 @@ class BinaryTree {
       }
 
       // if value of data is greater or euqal move right
-    } else if (newNode.data >= currentNode.data) {
+    } else if (newNode.score >= currentNode.score) {
       if (currentNode.right === null) {
         currentNode.rigth = newNode;
       } else {
@@ -38,11 +39,4 @@ class BinaryTree {
       }
     }
   }
-}
-
-const tree = new BinaryTree();
-
-for (let i = 0; i <= 1000; i++) {
-  const value = Math.ceil(Math.random() * 2000);
-  tree.insertData(value);
-}
+};
