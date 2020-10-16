@@ -13,15 +13,19 @@ export default class BoardEngine {
 
   initBoard() {
     this.board.setUpBoard();
-  }
-
-  renderBoard() {
     const grapBoard = document.createElement("div");
     const b = this.board;
-
     grapBoard.classList.add("board");
     grapBoard.style.gridTemplateColumns = `repeat(${b.x}, ${b.x}fr)`;
     grapBoard.style.gridTemplateRows = `repeat(${b.y}, ${b.y}fr)`;
+    this.root.append(grapBoard);
+  }
+
+  renderBoard() {
+    console.log("Rendeing");
+    const grapBoard = document.querySelector(".board");
+    grapBoard.innerHTML = "";
+    const b = this.board;
 
     for (let cell in b.board) {
       const cellStatus = b.board[cell];
@@ -43,6 +47,10 @@ export default class BoardEngine {
         `;
       }
 
+      if (this.phase === "opponent-turn") {
+        this.computerMove();
+      }
+
       grapCell.addEventListener("click", (e) => {
         const cellStatusObject = {
           cellId: e.target.id,
@@ -53,7 +61,8 @@ export default class BoardEngine {
         // switch to "move"
 
         const clickedCell = document.getElementById(e.target.id);
-        clickedCell.classList.contains("target")
+        clickedCell.classList.contains("target") ||
+        clickedCell.classList.contains("jump")
           ? (this.phase = "move")
           : (this.phase = "select");
 
@@ -61,21 +70,70 @@ export default class BoardEngine {
           this.handleSelectClick(cellStatusObject);
         }
         if (this.phase === "move") {
-          console.log("le't move!!");
+          this.handleMoveClick(cellStatusObject);
         }
       });
 
       grapBoard.append(grapCell);
     }
+  }
 
-    this.root.append(grapBoard);
+  computerMove() {
+    const b = this.board;
+    const bestMove = b.returnBestMove(this.opponentColor);
+    b.execMove(bestMove);
+    this.phase = "select";
+    this.turn = this.playerColor;
+    b.renderBoard();
+  }
+
+  handleMoveClick(cellStatus) {
+    const b = this.board;
+
+    const startingCell = document.querySelector(".highlight");
+    const startingCoord = Board.getCoord(startingCell.id);
+    const clickedCell = document.getElementById(cellStatus.cellId);
+
+    // if he clicked on a cell that has class jump prepare a jump
+    // if he clicked on a cell that has class target prepare a move
+
+    if (clickedCell.classList.contains("jump")) {
+      console.log("this is a jump");
+
+      const jumpCoord = Board.getCoord(cellStatus.cellId);
+      const opponentCell = document.querySelector(".target");
+      const opponentCoord = Board.getCoord(opponentCell.id);
+
+      const jumpObj = {
+        jump: jumpCoord,
+        opponent: opponentCoord,
+      };
+
+      console.log(jumpObj);
+
+      if (cellStatus.status === 0) {
+        b.execMove([startingCoord, jumpObj]);
+      }
+    } else if (clickedCell.classList.contains("target")) {
+      console.log("normal move");
+      const targetCoord = Board.getCoord(cellStatus.cellId);
+      if (cellStatus.status === 0) {
+        b.execMove([startingCoord, targetCoord]);
+      }
+    }
+
+    this.phase = "opponent-turn";
+    this.turn = this.opponentColor;
+
+    this.cleanHighligths();
+    this.renderBoard();
   }
 
   handleSelectClick(cellStatus) {
     console.log(cellStatus);
     const b = this.board;
 
-    if (this.turn === this.playerColor) {
+    if (this.turn === this.playerColor && this.phase === "select") {
       if (cellStatus.status === this.playerColor) {
         //Highlight possible positions
 
@@ -97,6 +155,13 @@ export default class BoardEngine {
             const targetId = Board.getKey(target);
             const targetCell = document.getElementById(targetId);
             targetCell.classList.add("target");
+          } else {
+            const opponentId = Board.getKey(target.opponent);
+            const jumpId = Board.getKey(target.jump);
+            const opponentCell = document.getElementById(opponentId);
+            const jumpCell = document.getElementById(jumpId);
+            opponentCell.classList.add("target");
+            jumpCell.classList.add("jump");
           }
         }
       } else if (cellStatus.status === this.opponentColor) {
@@ -105,11 +170,9 @@ export default class BoardEngine {
         console.log("void or empty");
       }
     } else {
-      console.log("not your turn");
+      console.log("not your turn not right phase");
     }
   }
-
-  highLigthPossiblePositions() {}
 
   cleanHighligths() {
     const cells = document.querySelectorAll(".cell");

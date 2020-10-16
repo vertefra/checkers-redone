@@ -350,9 +350,10 @@ class Board {
   }
 
   returnBestMove(MAX, board = this.board, depth = 0) {
-    const MAX_DEPTH = 8;
+    const MAX_DEPTH = 2;
     const virtualBoard = new Board(8);
     virtualBoard.loadBoard(board);
+    let bestMove = [];
 
     const MIN = MAX === "W" ? "B" : "W";
 
@@ -365,26 +366,22 @@ class Board {
       virtualBoard.execMove(maxMove);
 
       if (depth < MAX_DEPTH) {
-        console.log("depth is less, lets go deeper");
-        console.log("MAX is", MAX);
-        console.log("depth is ", depth);
         depth++;
         virtualBoard.returnBestMove(MIN, virtualBoard.board, depth);
       } else {
         console.log("Based reached, evaluating leaves");
         const score = virtualBoard.evaluateBoard(MAX);
+
         if (score > bestScore) {
           bestScore = score;
-          console.log("depth: ", depth);
-          console.log("changing best move ", maxMove);
-          virtualBoard.bestMove = maxMove;
+          bestMove = maxMove;
         }
       }
 
       virtualBoard.loadBoard(savedBoard);
     });
     if (depth === MAX_DEPTH) {
-      return virtualBoard.bestMove;
+      return bestMove;
     }
   }
 

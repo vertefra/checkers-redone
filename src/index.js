@@ -8,4 +8,4 @@ const root = document.getElementById("root");
 const engine = new BoardEngine(board, root);
 
 engine.initBoard();
-console.log(engine.renderBoard());
+engine.renderBoard();
