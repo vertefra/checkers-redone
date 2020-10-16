@@ -1,3 +1,5 @@
+const Board = require("./class");
+
 const jumpCell = (playerCoord, opponentCoord) => {
   // returns the coordinates of the cell immediatly after
   // another cell in diagonal

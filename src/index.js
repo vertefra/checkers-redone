@@ -1,15 +1,13 @@
-import Engine from "./engine.js";
 import Board from "./class.js";
 import "./style.css";
+import { bestMove } from "./utils.js";
 
 console.log("sanity");
 
 const board = new Board(8);
-const board_engine = new Engine(board);
-board_engine.setStartingBoard();
-board_engine.renderBoard();
+board.setUpBoard();
+board.renderBoard();
 
-const score = board_engine.evaluateBoard("W", board_engine.board);
+console.log(board.returnBestMove("B"));
 
-board_engine.bestMove("W");
-board_engine.renderBoard();
+board.renderBoard();

@@ -7,6 +7,8 @@ class Board {
     this.x = x;
     this.y = y;
     this.board = {};
+    this.bestMove = [];
+    this.maxValue = -Infinity;
   }
   //
   // initialize the board with 0 value
@@ -21,6 +23,15 @@ class Board {
         }
       }
     }
+  }
+
+  loadBoard(boardObj) {
+    this.board = { ...boardObj };
+    return this.board;
+  }
+
+  exportBoard() {
+    return { ...this.board };
   }
 
   setUpBoard() {
@@ -67,6 +78,7 @@ class Board {
     for (let key of black_starting_positions) {
       this.board[key] = "B";
     }
+    return { ...this.board };
   }
 
   renderBoard() {
@@ -221,26 +233,44 @@ class Board {
     const Ocolor = Pcolor === "W" ? "B" : "W";
     const allowedMoves = this.allowedMoves(coord);
     let possibleMoves = [];
+
     coord[0] = parseInt(coord[0]);
     coord[1] = parseInt(coord[1]);
+
     for (let move_to of allowedMoves) {
       const move = [coord];
       const cellStatus = this.returnPiece(move_to);
       if (cellStatus === 0) {
         move.push(move_to);
-        possibleMoves = [...possibleMoves, ...move];
+        possibleMoves = [...possibleMoves, move];
       } else if (cellStatus === Ocolor) {
         const jump = this.canJump(coord, move_to);
-        move.push(jump);
         if (jump) {
-          possibleMoves = [...possibleMoves, ...move];
+          move.push(jump);
+          possibleMoves = [...possibleMoves, move];
         }
       }
     }
 
     const flat_moves = [...possibleMoves];
-
     return flat_moves;
+  }
+
+  returnAllPossibleMoves(color) {
+    let allMoves = [];
+
+    for (let key in this.board) {
+      const coord = Board.getCoord(key);
+      const cell = this.returnPiece(coord);
+      if (cell !== " " && cell !== 0) {
+        const moves = this.evaluateMoves(coord);
+        if (moves.length > 0) {
+          allMoves = [...allMoves, ...moves];
+        }
+      }
+    }
+
+    return allMoves;
   }
 
   // EXEC MOVE:
@@ -291,8 +321,6 @@ class Board {
 
       const { jump, opponent } = to;
 
-      console.log(this.board[Board.getKey(jump)]);
-
       if (opponent === 0 || opponent === " ")
         return { success: false, error: "opponent position is 0 or void" };
 
@@ -304,6 +332,59 @@ class Board {
       this.removePiece(opponent);
 
       return true;
+    }
+  }
+
+  evaluateBoard(max) {
+    let MAX_PIECES = 0;
+    let MIN_PIECES = 0;
+    const MAX = max;
+    const MIN = MAX === "W" ? "B" : "W";
+
+    for (let cellKey in this.board) {
+      const cell = this.board[cellKey];
+      if (cell === MAX) MAX_PIECES++;
+      if (cell === MIN) MIN_PIECES++;
+      return MAX_PIECES - MIN_PIECES;
+    }
+  }
+
+  returnBestMove(MAX, board = this.board, depth = 0) {
+    const MAX_DEPTH = 8;
+    const virtualBoard = new Board(8);
+    virtualBoard.loadBoard(board);
+
+    const MIN = MAX === "W" ? "B" : "W";
+
+    let bestScore = -Infinity;
+
+    const maxMoves = virtualBoard.returnAllPossibleMoves(MAX);
+
+    maxMoves.forEach((maxMove) => {
+      const savedBoard = virtualBoard.exportBoard();
+      virtualBoard.execMove(maxMove);
+
+      if (depth < MAX_DEPTH) {
+        console.log("depth is less, lets go deeper");
+        console.log("MAX is", MAX);
+        console.log("depth is ", depth);
+        depth++;
+        virtualBoard.returnBestMove(MIN, virtualBoard.board, depth);
+      } else {
+        console.log("Based reached, evaluating leaves");
+        const score = virtualBoard.evaluateBoard(MAX);
+        if (score > bestScore) {
+          bestScore = score;
+          console.log("depth: ", depth);
+          console.log("changing best move ", maxMove);
+          virtualBoard.bestMove = maxMove;
+        }
+      }
+
+      virtualBoard.loadBoard(savedBoard);
+    });
+    if (depth === MAX_DEPTH) {
+      return virtualBoard.bestMove;
     }
   }
 
