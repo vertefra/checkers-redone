@@ -29,3 +29,11 @@
   border: 1px solid black;
   pointer-events: none;
 }
+
+.highlight {
+  background-color: blue;
+}
+
+.target {
+  background-color: coral;
+}

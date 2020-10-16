@@ -1,3 +1,5 @@
+import Board from "./class";
+
 export default class BoardEngine {
   constructor(board, DOMAnchor) {
     this.root = DOMAnchor;
@@ -5,6 +7,8 @@ export default class BoardEngine {
     this.playerColor = "W";
     this.opponentColor = "B";
     this.turn = "W";
+    this.phases = ["select", "move", "opponent-turn"];
+    this.phase = "select";
   }
 
   initBoard() {
@@ -45,7 +49,20 @@ export default class BoardEngine {
           status: cellStatus,
         };
 
-        this.handleSelectClick(cellStatusObject);
+        // Check if the clicked cell has target class means that the pase \
+        // switch to "move"
+
+        const clickedCell = document.getElementById(e.target.id);
+        clickedCell.classList.contains("target")
+          ? (this.phase = "move")
+          : (this.phase = "select");
+
+        if (this.phase === "select") {
+          this.handleSelectClick(cellStatusObject);
+        }
+        if (this.phase === "move") {
+          console.log("le't move!!");
+        }
       });
 
       grapBoard.append(grapCell);
@@ -56,10 +73,32 @@ export default class BoardEngine {
 
   handleSelectClick(cellStatus) {
     console.log(cellStatus);
+    const b = this.board;
+
     if (this.turn === this.playerColor) {
-      console.log("ok thats your turn");
       if (cellStatus.status === this.playerColor) {
-        console.log("ok this is your piece");
+        //Highlight possible positions
+
+        const cellCoord = Board.getCoord(cellStatus.cellId);
+
+        const positionCell = document.getElementById(cellStatus.cellId);
+        this.cleanHighligths();
+        positionCell.classList.add("highlight");
+
+        const moves = b.evaluateMoves(cellCoord);
+
+        for (let move of moves) {
+          const target = move[1];
+
+          // find the cell with id equal to the coordinates from position
+          // and highlight it
+
+          if (Array.isArray(target)) {
+            const targetId = Board.getKey(target);
+            const targetCell = document.getElementById(targetId);
+            targetCell.classList.add("target");
+          }
+        }
       } else if (cellStatus.status === this.opponentColor) {
         console.log("this is your opponent");
       } else {
@@ -68,5 +107,14 @@ export default class BoardEngine {
     } else {
       console.log("not your turn");
     }
+  }
+
+  highLigthPossiblePositions() {}
+
+  cleanHighligths() {
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach((cell) => {
+      cell.classList.remove("highlight", "target");
+    });
   }
 }
