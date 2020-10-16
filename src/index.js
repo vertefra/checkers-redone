@@ -1,13 +1,11 @@
 import Board from "./class.js";
-import "./style.css";
-import { bestMove } from "./utils.js";
+import BoardEngine from "./graphic";
 
-console.log("sanity");
+import "./board.css";
 
 const board = new Board(8);
-board.setUpBoard();
-board.renderBoard();
+const root = document.getElementById("root");
+const engine = new BoardEngine(board, root);
 
-console.log(board.returnBestMove("B"));
-
-board.renderBoard();
+engine.initBoard();
+engine.renderBoard();
