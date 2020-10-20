@@ -81,6 +81,7 @@ export default class BoardEngine {
   computerMove() {
     const b = this.board;
     const bestMove = b.returnBestMove(this.opponentColor);
+    console.log(bestMove);
     b.execMove(bestMove);
     this.phase = "select";
     this.turn = this.playerColor;

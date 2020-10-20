@@ -262,7 +262,7 @@ class Board {
     for (let key in this.board) {
       const coord = Board.getCoord(key);
       const cell = this.returnPiece(coord);
-      if (cell !== " " && cell !== 0) {
+      if (cell !== " " && cell !== 0 && cell === color) {
         const moves = this.evaluateMoves(coord);
         if (moves.length > 0) {
           allMoves = [...allMoves, ...moves];
@@ -341,16 +341,42 @@ class Board {
     const MAX = max;
     const MIN = MAX === "W" ? "B" : "W";
 
-    for (let cellKey in this.board) {
-      const cell = this.board[cellKey];
-      if (cell === MAX) MAX_PIECES++;
-      if (cell === MIN) MIN_PIECES++;
-      return MAX_PIECES - MIN_PIECES;
+    if (this.returnAllPossibleMoves(MIN).length === 0) {
+      return 100;
     }
+
+    for (let keys in this.board) {
+      const coord = Board.getCoord(keys);
+      const cell = this.returnPiece(coord);
+
+      if (cell === MAX) {
+        //  eval for max
+        MAX_PIECES++;
+        if (MAX === "W" && coord[1] === 8) {
+          console.log("W could be king");
+          MAX_PIECES += 5;
+        }
+        if (MAX === "B" && coord[1] === 1) {
+          console.log("B could be king");
+          MAX_PIECES += 5;
+        }
+      } else if (cell === MIN) {
+        MIN_PIECES++;
+        if (MIN === "W" && coord[1] === 8) {
+          console.log("W could be king");
+          MIN_PIECES += 5;
+        }
+        if (MIN === "B" && coord[1] === 1) {
+          console.log("B could be king");
+          MIN_PIECES += 5;
+        }
+      }
+    }
+    return MAX_PIECES - MIN_PIECES;
   }
 
   returnBestMove(MAX, board = this.board, depth = 0) {
-    const MAX_DEPTH = 3;
+    const MAX_DEPTH = 4;
     const virtualBoard = new Board(8);
     virtualBoard.loadBoard(board);
     let bestMove = [];
@@ -366,7 +392,7 @@ class Board {
 
       virtualBoard.execMove(maxMove);
 
-      if (depth < MAX_DEPTH) {
+      if (depth < MAX_DEPTH && maxMoves.length > 0) {
         depth++;
         const move = virtualBoard.returnBestMove(
           MIN,
@@ -386,10 +412,36 @@ class Board {
 
       virtualBoard.loadBoard(savedBoard);
     });
-    if (depth === MAX_DEPTH) {
-      return bestMove;
-    }
+    console.log(depth, bestMove);
+    return bestMove;
   }
+
+  // maxMoves.forEach((maxMove) => {
+  //   const savedBoard = virtualBoard.exportBoard();
+
+  //   virtualBoard.execMove(maxMove);
+
+  //   if (depth < MAX_DEPTH) {
+  //     depth++;
+  //     const minMove = virtualBoard.returnBestMove(
+  //       MIN,
+  //       virtualBoard.board,
+  //       depth
+  //     );
+  //     virtualBoard.execMove(minMove);
+  //   } else {
+  //     const score = virtualBoard.evaluateBoard(MAX);
+
+  //     if (score > bestScore) {
+  //       bestScore = score;
+  //       bestMove = [...maxMove];
+  //     }
+  //   }
+
+  //   virtualBoard.loadBoard(savedBoard);
+  // });
+
+  // return bestMove;
 
   inBoard(coord) {
     if (
